@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace baodeag.InterviewTest
 {
@@ -7,14 +8,18 @@ namespace baodeag.InterviewTest
     {
         public static InterviewScoreManager instance;
 
-        [Header("Score")]
-        [SerializeField] private int winScore = 10;
+        [Header("Win Condition")]
+        [FormerlySerializedAs("winScore")]
+        [FormerlySerializedAs("targetGemCount")]
+        [SerializeField] private int targetScore = 10;
 
         public event Action<int> OnScoreChanged;
-        public event Action OnWinScoreReached;
+        public event Action<int> OnGemCountChanged;
+        public event Action OnTargetScoreReached;
 
         public int CurrentScore { get; private set; }
-        public int WinScore => winScore;
+        public int CurrentGemCount { get; private set; }
+        public int TargetScore => targetScore;
 
         private bool winRaised;
 
@@ -28,24 +33,28 @@ namespace baodeag.InterviewTest
 
             instance = this;
             CurrentScore = InterviewSaveManager.LoadScore();
+            CurrentGemCount = InterviewSaveManager.LoadGemCount();
         }
 
         private void Start()
         {
             OnScoreChanged?.Invoke(CurrentScore);
+            OnGemCountChanged?.Invoke(CurrentGemCount);
             CheckWin();
         }
 
-        public void AddScore(int amount)
+        public void AddCollectedGem(int scoreValue)
         {
-            if (amount <= 0 || winRaised)
+            if (scoreValue <= 0 || winRaised)
             {
                 return;
             }
 
-            CurrentScore += amount;
-            InterviewSaveManager.SaveScore(CurrentScore);
+            CurrentScore += scoreValue;
+            CurrentGemCount++;
+            InterviewSaveManager.SaveProgress(CurrentScore, CurrentGemCount);
             OnScoreChanged?.Invoke(CurrentScore);
+            OnGemCountChanged?.Invoke(CurrentGemCount);
             CheckWin();
         }
 
@@ -53,19 +62,21 @@ namespace baodeag.InterviewTest
         {
             winRaised = false;
             CurrentScore = 0;
+            CurrentGemCount = 0;
             InterviewSaveManager.ClearScore();
             OnScoreChanged?.Invoke(CurrentScore);
+            OnGemCountChanged?.Invoke(CurrentGemCount);
         }
 
         private void CheckWin()
         {
-            if (winRaised || CurrentScore < winScore)
+            if (winRaised || CurrentScore < targetScore)
             {
                 return;
             }
 
             winRaised = true;
-            OnWinScoreReached?.Invoke();
+            OnTargetScoreReached?.Invoke();
         }
     }
 }

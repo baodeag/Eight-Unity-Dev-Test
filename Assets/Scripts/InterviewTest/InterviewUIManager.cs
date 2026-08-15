@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace baodeag.InterviewTest
@@ -8,7 +9,8 @@ namespace baodeag.InterviewTest
         public static InterviewUIManager instance;
 
         [Header("HUD")]
-        [SerializeField] private Text scoreText;
+        [FormerlySerializedAs("scoreText")]
+        [SerializeField] private Text scoreValueText;
         [SerializeField] private RectTransform gemIconTarget;
         [SerializeField] private Canvas canvas;
 
@@ -20,6 +22,8 @@ namespace baodeag.InterviewTest
 
         private Camera mainCamera;
         private bool subscribedToScore;
+        private int currentScore;
+        private int currentGemCount;
 
         private void Awake()
         {
@@ -54,6 +58,7 @@ namespace baodeag.InterviewTest
             {
                 SubscribeToScore();
                 UpdateScore(InterviewScoreManager.instance.CurrentScore);
+                UpdateGemCount(InterviewScoreManager.instance.CurrentGemCount);
             }
         }
 
@@ -62,6 +67,7 @@ namespace baodeag.InterviewTest
             if (InterviewScoreManager.instance != null)
             {
                 InterviewScoreManager.instance.OnScoreChanged -= UpdateScore;
+                InterviewScoreManager.instance.OnGemCountChanged -= UpdateGemCount;
             }
 
             subscribedToScore = false;
@@ -125,9 +131,22 @@ namespace baodeag.InterviewTest
 
         private void UpdateScore(int score)
         {
-            if (scoreText != null)
+            currentScore = score;
+            RefreshHudText();
+        }
+
+        private void UpdateGemCount(int gemCount)
+        {
+            currentGemCount = gemCount;
+            RefreshHudText();
+        }
+
+        private void RefreshHudText()
+        {
+            if (scoreValueText != null)
             {
-                scoreText.text = $"Score: {score}";
+                int targetScore = InterviewScoreManager.instance != null ? InterviewScoreManager.instance.TargetScore : 10;
+                scoreValueText.text = $"{currentScore}/{targetScore}";
             }
         }
 
@@ -139,6 +158,7 @@ namespace baodeag.InterviewTest
             }
 
             InterviewScoreManager.instance.OnScoreChanged += UpdateScore;
+            InterviewScoreManager.instance.OnGemCountChanged += UpdateGemCount;
             subscribedToScore = true;
         }
 

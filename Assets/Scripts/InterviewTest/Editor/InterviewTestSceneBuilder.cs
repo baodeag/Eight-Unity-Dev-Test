@@ -33,8 +33,8 @@ namespace baodeag.InterviewTest.Editor
             Material epicMaterial = CreateGemMaterial("Epic Gem Material", new Color(1f, 0.35f, 0.85f));
 
             InterviewGemType commonType = CreateGemType("Common Gem", 1, 70, commonMaterial, new Color(0.2f, 0.95f, 1f));
-            InterviewGemType rareType = CreateGemType("Rare Gem", 3, 25, rareMaterial, new Color(0.45f, 1f, 0.3f));
-            InterviewGemType epicType = CreateGemType("Epic Gem", 5, 5, epicMaterial, new Color(1f, 0.35f, 0.85f));
+            InterviewGemType rareType = CreateGemType("Rare Gem", 2, 25, rareMaterial, new Color(0.45f, 1f, 0.3f));
+            InterviewGemType epicType = CreateGemType("Epic Gem", 3, 5, epicMaterial, new Color(1f, 0.35f, 0.85f));
 
             RuntimeAnimatorController animatorController = CreateAnimatorController();
             InterviewGem gemPrefab = CreateGemPrefab(commonMaterial);
@@ -461,10 +461,15 @@ namespace baodeag.InterviewTest.Editor
             scaler.referenceResolution = new Vector2(1920f, 1080f);
             canvasObject.AddComponent<GraphicRaycaster>();
 
-            GameObject hud = CreateUIObject("HUD", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -20f), new Vector2(320f, 90f));
-            Text scoreText = CreateText("Score Text", hud.transform, "Score: 0", 34, TextAnchor.MiddleLeft);
+            GameObject hud = CreateUIObject("HUD", canvasObject.transform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(20f, -20f), new Vector2(360f, 82f));
+            Text scoreLabel = CreateText("Score Label", hud.transform, "Score", 26, TextAnchor.MiddleLeft);
+            Text scoreValueText = CreateText("Score Value", hud.transform, "0/10", 34, TextAnchor.MiddleLeft);
+
+            SetRect(scoreLabel.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(58f, -40f), new Vector2(100f, 34f));
+            SetRect(scoreValueText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(178f, -40f), new Vector2(130f, 40f));
+
             gemIcon = CreatePanel("Gem Icon Target", hud.transform, new Color(0.2f, 0.95f, 1f, 0.9f), new Vector2(56f, 56f)).transform;
-            ((RectTransform)gemIcon).anchoredPosition = new Vector2(245f, 0f);
+            SetRect((RectTransform)gemIcon, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(300f, -40f), new Vector2(56f, 56f));
 
             GameObject controls = CreateUIObject("Controls", canvasObject.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             joystick = BuildJoystick(controls.transform);
@@ -475,7 +480,7 @@ namespace baodeag.InterviewTest.Editor
             GameObject winPanel = BuildWinPanel(canvasObject.transform);
 
             InterviewUIManager uiManager = canvasObject.AddComponent<InterviewUIManager>();
-            SetObject(uiManager, "scoreText", scoreText);
+            SetObject(uiManager, "scoreValueText", scoreValueText);
             SetObject(uiManager, "gemIconTarget", gemIcon);
             SetObject(uiManager, "canvas", canvas);
             SetObject(uiManager, "controlsRoot", controls);
@@ -559,11 +564,16 @@ namespace baodeag.InterviewTest.Editor
             GameObject gameObject = new GameObject(name, typeof(RectTransform));
             gameObject.transform.SetParent(parent, false);
             RectTransform rect = gameObject.GetComponent<RectTransform>();
+            SetRect(rect, anchorMin, anchorMax, anchoredPosition, size);
+            return gameObject;
+        }
+
+        private static void SetRect(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 size)
+        {
             rect.anchorMin = anchorMin;
             rect.anchorMax = anchorMax;
             rect.anchoredPosition = anchoredPosition;
             rect.sizeDelta = size;
-            return gameObject;
         }
 
         private static void WirePlayer(GameObject player, InterviewVirtualJoystick joystick, InterviewCameraController cameraController, InterviewBoundary boundary)

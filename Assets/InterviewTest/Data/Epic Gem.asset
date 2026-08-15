@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Epic Gem
   m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemType
   gemName: Epic Gem
-  scoreValue: 5
+  scoreValue: 3
   spawnWeight: 5
   material: {fileID: 2100000, guid: fdf922517290cd84db67ef57c6cf59b4, type: 2}
   lightColor: {r: 1, g: 0.35, b: 0.85, a: 1}

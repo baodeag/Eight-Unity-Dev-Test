@@ -111,7 +111,7 @@ namespace baodeag.InterviewTest
             int score = gemType != null ? gemType.scoreValue : 1;
             if (InterviewScoreManager.instance != null)
             {
-                InterviewScoreManager.instance.AddScore(score);
+                InterviewScoreManager.instance.AddCollectedGem(score);
             }
 
             if (pool != null)

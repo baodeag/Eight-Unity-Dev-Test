@@ -41,9 +41,9 @@ namespace baodeag.InterviewTest
             uiManager.ShowWaitingState();
             SubscribeToScore();
 
-            if (InterviewScoreManager.instance != null && InterviewScoreManager.instance.CurrentScore >= InterviewScoreManager.instance.WinScore)
+            if (InterviewScoreManager.instance != null && InterviewScoreManager.instance.CurrentScore >= InterviewScoreManager.instance.TargetScore)
             {
-                HandleWinScoreReached();
+                HandleTargetScoreReached();
             }
         }
 
@@ -51,7 +51,7 @@ namespace baodeag.InterviewTest
         {
             if (InterviewScoreManager.instance != null)
             {
-                InterviewScoreManager.instance.OnWinScoreReached -= HandleWinScoreReached;
+                InterviewScoreManager.instance.OnTargetScoreReached -= HandleTargetScoreReached;
             }
 
             subscribedToScore = false;
@@ -89,7 +89,7 @@ namespace baodeag.InterviewTest
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
 
-        private void HandleWinScoreReached()
+        private void HandleTargetScoreReached()
         {
             CurrentState = InterviewGameState.Win;
             SetGameplayEnabled(false);
@@ -127,7 +127,7 @@ namespace baodeag.InterviewTest
                 return;
             }
 
-            InterviewScoreManager.instance.OnWinScoreReached += HandleWinScoreReached;
+            InterviewScoreManager.instance.OnTargetScoreReached += HandleTargetScoreReached;
             subscribedToScore = true;
         }
     }
