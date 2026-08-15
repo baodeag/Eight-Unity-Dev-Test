@@ -129,9 +129,13 @@ MonoBehaviour:
   checkDistance: 0.9
   checkHeight: 0.9
   requiredInputDot: 0.6
-  climbHeight: 1.8
-  climbForward: 0.9
-  climbDuration: 0.85
+  climbForward: 1.15
+  climbDuration: 0.95
+  topSurfacePadding: 0.08
+  landingClearancePadding: 0.08
+  blockingLayers:
+    serializedVersion: 2
+    m_Bits: 4294967039
 --- !u!1001 &7907702469274524189
 PrefabInstance:
   m_ObjectHideFlags: 0

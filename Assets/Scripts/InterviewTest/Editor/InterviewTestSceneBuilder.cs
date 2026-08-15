@@ -199,7 +199,6 @@ namespace baodeag.InterviewTest.Editor
             stateMachine.defaultState = idleState;
             AddFloatTransition(idleState, runState, "MoveAmount", 0.1f, true);
             AddFloatTransition(runState, idleState, "MoveAmount", 0.1f, false);
-            AddBoolTransition(stateMachine, climbState, "isClimbing", true);
             AddBoolStateTransition(climbState, idleState, "isClimbing", false);
             AddTriggerTransition(stateMachine, attackState, "Attack");
             AnimatorStateTransition attackExit = attackState.AddTransition(idleState);
@@ -242,6 +241,7 @@ namespace baodeag.InterviewTest.Editor
             AnimatorStateTransition transition = stateMachine.AddAnyStateTransition(to);
             transition.hasExitTime = false;
             transition.duration = 0.08f;
+            transition.canTransitionToSelf = false;
             transition.AddCondition(value ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot, 0f, parameter);
         }
 
@@ -250,6 +250,7 @@ namespace baodeag.InterviewTest.Editor
             AnimatorStateTransition transition = from.AddTransition(to);
             transition.hasExitTime = false;
             transition.duration = 0.08f;
+            transition.canTransitionToSelf = false;
             transition.AddCondition(value ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot, 0f, parameter);
         }
 
@@ -258,6 +259,7 @@ namespace baodeag.InterviewTest.Editor
             AnimatorStateTransition transition = stateMachine.AddAnyStateTransition(to);
             transition.hasExitTime = false;
             transition.duration = 0.05f;
+            transition.canTransitionToSelf = false;
             transition.AddCondition(AnimatorConditionMode.If, 0f, parameter);
         }
 
@@ -332,6 +334,11 @@ namespace baodeag.InterviewTest.Editor
             SetObject(climb, "characterController", controller);
             SetObject(climb, "animator", animator);
             SetObject(climb, "climbableLayers", LayerMask.GetMask("Climbable"));
+            SetObject(climb, "climbForward", 1.15f);
+            SetObject(climb, "climbDuration", 0.95f);
+            SetObject(climb, "topSurfacePadding", 0.08f);
+            SetObject(climb, "landingClearancePadding", 0.08f);
+            SetObject(climb, "blockingLayers", ~LayerMask.GetMask("Gem"));
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, PlayerPrefabPath);
             Object.DestroyImmediate(root);
