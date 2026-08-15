@@ -1,0 +1,185 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace baodeag.InterviewTest
+{
+    public class InterviewUIManager : MonoBehaviour
+    {
+        public static InterviewUIManager instance;
+
+        [Header("HUD")]
+        [SerializeField] private Text scoreText;
+        [SerializeField] private RectTransform gemIconTarget;
+        [SerializeField] private Canvas canvas;
+
+        [Header("Controls")]
+        [SerializeField] private GameObject controlsRoot;
+        [SerializeField] private Button startButton;
+        [SerializeField] private Button resetButton;
+        [SerializeField] private GameObject winPanel;
+
+        private Camera mainCamera;
+        private bool subscribedToScore;
+
+        private void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            instance = this;
+            mainCamera = Camera.main;
+        }
+
+        private void OnEnable()
+        {
+            SubscribeToScore();
+
+            if (startButton != null)
+            {
+                startButton.onClick.AddListener(HandleStartClicked);
+            }
+
+            if (resetButton != null)
+            {
+                resetButton.onClick.AddListener(HandleResetClicked);
+            }
+        }
+
+        private void Start()
+        {
+            if (InterviewScoreManager.instance != null)
+            {
+                SubscribeToScore();
+                UpdateScore(InterviewScoreManager.instance.CurrentScore);
+            }
+        }
+
+        private void OnDisable()
+        {
+            if (InterviewScoreManager.instance != null)
+            {
+                InterviewScoreManager.instance.OnScoreChanged -= UpdateScore;
+            }
+
+            subscribedToScore = false;
+
+            if (startButton != null)
+            {
+                startButton.onClick.RemoveListener(HandleStartClicked);
+            }
+
+            if (resetButton != null)
+            {
+                resetButton.onClick.RemoveListener(HandleResetClicked);
+            }
+        }
+
+        public void ShowWaitingState()
+        {
+            SetControlsActive(false);
+            SetStartActive(true);
+            SetWinActive(false);
+        }
+
+        public void ShowIntroState()
+        {
+            SetControlsActive(false);
+            SetStartActive(false);
+            SetWinActive(false);
+        }
+
+        public void ShowPlayingState()
+        {
+            SetControlsActive(true);
+            SetStartActive(false);
+            SetWinActive(false);
+        }
+
+        public void ShowWinState()
+        {
+            SetControlsActive(false);
+            SetStartActive(false);
+            SetWinActive(true);
+        }
+
+        public Vector3 GetGemIconWorldPosition()
+        {
+            if (gemIconTarget == null)
+            {
+                return Vector3.zero;
+            }
+
+            Vector3 screenPosition = RectTransformUtility.WorldToScreenPoint(canvas != null ? canvas.worldCamera : null, gemIconTarget.position);
+            Camera cameraToUse = mainCamera != null ? mainCamera : Camera.main;
+            if (cameraToUse == null)
+            {
+                return Vector3.zero;
+            }
+
+            Ray ray = cameraToUse.ScreenPointToRay(screenPosition);
+            return ray.GetPoint(6f);
+        }
+
+        private void UpdateScore(int score)
+        {
+            if (scoreText != null)
+            {
+                scoreText.text = $"Score: {score}";
+            }
+        }
+
+        private void SubscribeToScore()
+        {
+            if (subscribedToScore || InterviewScoreManager.instance == null)
+            {
+                return;
+            }
+
+            InterviewScoreManager.instance.OnScoreChanged += UpdateScore;
+            subscribedToScore = true;
+        }
+
+        private void HandleStartClicked()
+        {
+            if (InterviewGameManager.instance != null)
+            {
+                InterviewGameManager.instance.StartGame();
+            }
+        }
+
+        private void HandleResetClicked()
+        {
+            if (InterviewGameManager.instance != null)
+            {
+                InterviewGameManager.instance.ResetGame();
+            }
+        }
+
+        private void SetControlsActive(bool active)
+        {
+            if (controlsRoot != null)
+            {
+                controlsRoot.SetActive(active);
+            }
+        }
+
+        private void SetStartActive(bool active)
+        {
+            if (startButton != null)
+            {
+                startButton.gameObject.SetActive(active);
+            }
+        }
+
+        private void SetWinActive(bool active)
+        {
+            if (winPanel != null)
+            {
+                winPanel.SetActive(active);
+            }
+        }
+    }
+}
