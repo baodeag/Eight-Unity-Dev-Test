@@ -15,8 +15,9 @@ namespace baodeag.InterviewTest
         [SerializeField] private Vector3 followOffset = new Vector3(0f, 4.4f, -9f);
         [SerializeField] private float followSmoothTime = 0.08f;
         [SerializeField] private float rotationSensitivity = 0.18f;
-        [SerializeField] private float minPitch = 8f;
-        [SerializeField] private float maxPitch = 40f;
+        [SerializeField] private float verticalSensitivity = 0.18f;
+        [SerializeField] private float minPitch = -10f;
+        [SerializeField] private float maxPitch = 65f;
 
         [Header("Collision")]
         [SerializeField] private LayerMask collisionLayers = ~0;
@@ -29,6 +30,7 @@ namespace baodeag.InterviewTest
         private float yaw;
         private float pitch = 18f;
         private bool controlEnabled;
+        private bool followEnabled = true;
 
         private void Start()
         {
@@ -42,7 +44,7 @@ namespace baodeag.InterviewTest
 
         private void LateUpdate()
         {
-            if (target == null)
+            if (target == null || !followEnabled)
             {
                 return;
             }
@@ -56,6 +58,15 @@ namespace baodeag.InterviewTest
             controlEnabled = enabled;
         }
 
+        public void SetFollowEnabled(bool enabled)
+        {
+            followEnabled = enabled;
+            if (!enabled)
+            {
+                followVelocity = Vector3.zero;
+            }
+        }
+
         public void SnapBehindTarget()
         {
             if (target == null)
@@ -64,6 +75,7 @@ namespace baodeag.InterviewTest
             }
 
             yaw = target.eulerAngles.y;
+            followVelocity = Vector3.zero;
             FollowTarget(true);
         }
 
@@ -98,8 +110,7 @@ namespace baodeag.InterviewTest
                 return;
             }
 
-            yaw += pointerDelta.x * rotationSensitivity;
-            pitch = Mathf.Clamp(pitch - pointerDelta.y * rotationSensitivity * 0.35f, minPitch, maxPitch);
+            ApplyOrbitDelta(pointerDelta);
 #else
             if (!controlEnabled || Input.touchCount == 0)
             {
@@ -114,10 +125,15 @@ namespace baodeag.InterviewTest
 
             if (touch.phase == TouchPhase.Moved)
             {
-                yaw += touch.deltaPosition.x * rotationSensitivity;
-                pitch = Mathf.Clamp(pitch - touch.deltaPosition.y * rotationSensitivity * 0.35f, minPitch, maxPitch);
+                ApplyOrbitDelta(touch.deltaPosition);
             }
 #endif
+        }
+
+        private void ApplyOrbitDelta(Vector2 pointerDelta)
+        {
+            yaw += pointerDelta.x * rotationSensitivity;
+            pitch = Mathf.Clamp(pitch - pointerDelta.y * verticalSensitivity, minPitch, maxPitch);
         }
 
         private void FollowTarget(bool snap = false)

@@ -12,10 +12,10 @@ namespace baodeag.InterviewTest
         [SerializeField] private Transform player;
 
         [Header("Intro")]
-        [SerializeField] private float orbitDuration = 2.5f;
-        [SerializeField] private float blendDuration = 1.1f;
-        [SerializeField] private float orbitRadius = 18f;
-        [SerializeField] private float orbitHeight = 12f;
+        [SerializeField] private float orbitDuration = 3.2f;
+        [SerializeField] private float blendDuration = 1.4f;
+        [SerializeField] private float orbitRadius = 28f;
+        [SerializeField] private float orbitHeight = 18f;
         [SerializeField] private AnimationCurve ease = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         private Coroutine introRoutine;
@@ -33,14 +33,16 @@ namespace baodeag.InterviewTest
         private IEnumerator PlayIntroRoutine(Action onComplete)
         {
             followCamera.SetCameraControlEnabled(false);
+            followCamera.SetFollowEnabled(false);
             Transform cameraTransform = followCamera.transform;
             Vector3 center = mapCenter != null ? mapCenter.position : Vector3.zero;
 
             for (float time = 0f; time < orbitDuration; time += Time.deltaTime)
             {
-                float t = time / orbitDuration;
-                float angle = Mathf.Lerp(-40f, 250f, t) * Mathf.Deg2Rad;
-                Vector3 position = center + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * orbitRadius + Vector3.up * orbitHeight;
+                float t = ease.Evaluate(time / orbitDuration);
+                float angle = Mathf.Lerp(-55f, 265f, t) * Mathf.Deg2Rad;
+                float height = Mathf.Lerp(orbitHeight + 4f, orbitHeight, t);
+                Vector3 position = center + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * orbitRadius + Vector3.up * height;
                 cameraTransform.position = position;
                 cameraTransform.rotation = Quaternion.LookRotation(center - position + Vector3.up * 1.5f, Vector3.up);
                 yield return null;
@@ -63,6 +65,7 @@ namespace baodeag.InterviewTest
             }
 
             followCamera.SnapBehindTarget();
+            followCamera.SetFollowEnabled(true);
             onComplete?.Invoke();
         }
     }

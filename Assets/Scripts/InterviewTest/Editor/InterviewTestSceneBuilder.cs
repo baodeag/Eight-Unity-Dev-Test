@@ -56,6 +56,10 @@ namespace baodeag.InterviewTest.Editor
             InterviewCameraController cameraController = mainCamera.gameObject.AddComponent<InterviewCameraController>();
             SetObject(cameraController, "target", player.transform);
             SetObject(cameraController, "followOffset", new Vector3(0f, 4.4f, -9f));
+            SetObject(cameraController, "rotationSensitivity", 0.18f);
+            SetObject(cameraController, "verticalSensitivity", 0.18f);
+            SetObject(cameraController, "minPitch", -10f);
+            SetObject(cameraController, "maxPitch", 65f);
 
             GameObject mapCenter = new GameObject("Map Center");
             mapCenter.transform.position = ground.transform.position;
@@ -65,6 +69,10 @@ namespace baodeag.InterviewTest.Editor
             SetObject(intro, "followCamera", cameraController);
             SetObject(intro, "mapCenter", mapCenter.transform);
             SetObject(intro, "player", player.transform);
+            SetObject(intro, "orbitDuration", 3.2f);
+            SetObject(intro, "blendDuration", 1.4f);
+            SetObject(intro, "orbitRadius", 28f);
+            SetObject(intro, "orbitHeight", 18f);
 
             BuildGemSystem(gemPrefab, player.transform, commonType, rareType, epicType, out InterviewGemSpawner spawner);
             InterviewUIManager uiManager = BuildUI(player.GetComponent<InterviewPlayerController>(), out InterviewVirtualJoystick joystick, out Transform gemIcon);

@@ -911,10 +911,10 @@ MonoBehaviour:
   followCamera: {fileID: 865568765}
   mapCenter: {fileID: 67269361}
   player: {fileID: 1896547992}
-  orbitDuration: 2.5
-  blendDuration: 1.1
-  orbitRadius: 18
-  orbitHeight: 12
+  orbitDuration: 3.2
+  blendDuration: 1.4
+  orbitRadius: 28
+  orbitHeight: 18
   ease:
     serializedVersion: 2
     m_Curve:
@@ -1011,8 +1011,9 @@ MonoBehaviour:
   followOffset: {x: 0, y: 4.4, z: -9}
   followSmoothTime: 0.08
   rotationSensitivity: 0.18
-  minPitch: 8
-  maxPitch: 40
+  verticalSensitivity: 0.18
+  minPitch: -10
+  maxPitch: 65
   collisionLayers:
     serializedVersion: 2
     m_Bits: 4294967295
