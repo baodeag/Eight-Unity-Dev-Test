@@ -14,6 +14,12 @@ namespace baodeag.InterviewTest
         [SerializeField] private InterviewGemSpawner gemSpawner;
         [SerializeField] private InterviewUIManager uiManager;
         [SerializeField] private ParticleSystem winParticle;
+        [SerializeField] private ParticleSystem winParticlePrefab;
+
+        [Header("Win VFX")]
+        [SerializeField] private int winParticleBurstCount = 5;
+        [SerializeField] private float winParticleSpacing = 1.6f;
+        [SerializeField] private Vector3 winParticleOffset = new Vector3(0f, 1.6f, 0f);
 
         public InterviewGameState CurrentState { get; private set; } = InterviewGameState.WaitingToStart;
         public bool IsGameplayActive => CurrentState == InterviewGameState.Playing;
@@ -98,7 +104,56 @@ namespace baodeag.InterviewTest
             if (winParticle != null)
             {
                 winParticle.gameObject.SetActive(true);
-                winParticle.Play(true);
+                PlayParticleSystemTree(winParticle);
+            }
+
+            SpawnExtraWinParticles();
+        }
+
+        private void SpawnExtraWinParticles()
+        {
+            ParticleSystem prefab = winParticlePrefab != null ? winParticlePrefab : winParticle;
+            if (prefab == null)
+            {
+                return;
+            }
+
+            Vector3 center = GetWinParticleCenter();
+            for (int i = 0; i < winParticleBurstCount; i++)
+            {
+                float angle = winParticleBurstCount <= 1 ? 0f : (360f / winParticleBurstCount) * i;
+                Vector3 offset = Quaternion.Euler(0f, angle, 0f) * Vector3.forward * winParticleSpacing;
+                ParticleSystem particle = Instantiate(prefab, center + offset, Quaternion.Euler(0f, angle, 0f));
+                particle.name = $"Win Confetti Burst {i + 1}";
+                particle.gameObject.SetActive(true);
+                PlayParticleSystemTree(particle);
+                Destroy(particle.gameObject, 6f);
+            }
+        }
+
+        private Vector3 GetWinParticleCenter()
+        {
+            if (playerController != null)
+            {
+                return playerController.transform.position + winParticleOffset;
+            }
+
+            if (cameraController != null)
+            {
+                return cameraController.transform.position + cameraController.transform.forward * 4f;
+            }
+
+            return Vector3.up * 2f;
+        }
+
+        private static void PlayParticleSystemTree(ParticleSystem particle)
+        {
+            ParticleSystem[] systems = particle.GetComponentsInChildren<ParticleSystem>(true);
+            for (int i = 0; i < systems.Length; i++)
+            {
+                systems[i].gameObject.SetActive(true);
+                systems[i].Clear(true);
+                systems[i].Play(true);
             }
         }
 

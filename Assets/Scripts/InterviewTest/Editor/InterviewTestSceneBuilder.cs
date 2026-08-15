@@ -603,6 +603,9 @@ namespace baodeag.InterviewTest.Editor
                 confetti.transform.position = playerTransform.position + Vector3.up * 2.2f;
                 confetti.SetActive(false);
                 SetObject(gameManager, "winParticle", confetti.GetComponent<ParticleSystem>());
+                SetObject(gameManager, "winParticlePrefab", confettiPrefab.GetComponent<ParticleSystem>());
+                SetObject(gameManager, "winParticleBurstCount", 7);
+                SetObject(gameManager, "winParticleSpacing", 1.8f);
             }
         }
 

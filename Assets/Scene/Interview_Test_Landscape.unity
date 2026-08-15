@@ -2687,6 +2687,10 @@ MonoBehaviour:
   gemSpawner: {fileID: 1242518973}
   uiManager: {fileID: 1961602910}
   winParticle: {fileID: 1486931581}
+  winParticlePrefab: {fileID: 19877600, guid: 923b1c5bf69ef2d4f9ca782562c1b826, type: 3}
+  winParticleBurstCount: 7
+  winParticleSpacing: 1.8
+  winParticleOffset: {x: 0, y: 1.6, z: 0}
 --- !u!114 &1607755846
 MonoBehaviour:
   m_ObjectHideFlags: 0
