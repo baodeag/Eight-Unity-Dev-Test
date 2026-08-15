@@ -17,11 +17,14 @@ namespace baodeag.Game
         [SerializeField] private float rotationSpeed = 14f;
         [SerializeField] private float gravity = -22f;
         [SerializeField] private float groundedStickForce = -2f;
+        [SerializeField] private float moveInputSqrThreshold = 0.01f;
+        [SerializeField] private float animatorDampTime = 0.1f;
 
         [Header("Attack")]
         [SerializeField] private float attackRadius = 2.1f;
         [SerializeField] private Vector3 attackOffset = new Vector3(0f, 0.75f, 0f);
         [SerializeField] private LayerMask gemLayers;
+        [SerializeField] private int attackHitBufferSize = 12;
 
         private static readonly int MoveAmountHash = Animator.StringToHash("MoveAmount");
         private static readonly int VerticalHash = Animator.StringToHash("Vertical");
@@ -30,19 +33,37 @@ namespace baodeag.Game
         private static readonly int AttackHash = Animator.StringToHash("Attack");
 
         private CharacterController characterController;
+        private Collider[] attackHits;
         private Vector3 verticalVelocity;
         private bool inputEnabled;
 
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
+            attackHits = new Collider[Mathf.Max(1, attackHitBufferSize)];
+        }
+
+        private void OnValidate()
+        {
+            moveSpeed = Mathf.Max(0f, moveSpeed);
+            rotationSpeed = Mathf.Max(0f, rotationSpeed);
+            moveInputSqrThreshold = Mathf.Max(0f, moveInputSqrThreshold);
+            animatorDampTime = Mathf.Max(0f, animatorDampTime);
+            attackRadius = Mathf.Max(0f, attackRadius);
+            attackHitBufferSize = Mathf.Max(1, attackHitBufferSize);
         }
 
         private void Update()
         {
+            if (climbDetector != null && climbDetector.IsClimbing)
+            {
+                UpdateAnimator(Vector2.zero, 0f);
+                return;
+            }
+
             HandleGravity();
 
-            if (!inputEnabled || (climbDetector != null && climbDetector.IsClimbing))
+            if (!inputEnabled)
             {
                 UpdateAnimator(Vector2.zero, 0f);
                 return;
@@ -67,15 +88,19 @@ namespace baodeag.Game
                 return;
             }
 
-            animator.SetTrigger(AttackHash);
+            if (animator != null)
+            {
+                animator.SetTrigger(AttackHash);
+            }
 
-            Collider[] hits = Physics.OverlapSphere(GetAttackCenter(), attackRadius, gemLayers, QueryTriggerInteraction.Collide);
+            int hitCount = Physics.OverlapSphereNonAlloc(GetAttackCenter(), attackRadius, attackHits, gemLayers, QueryTriggerInteraction.Collide);
             Gem nearestGem = null;
             float nearestSqrDistance = float.MaxValue;
 
-            for (int i = 0; i < hits.Length; i++)
+            for (int i = 0; i < hitCount; i++)
             {
-                Gem gem = hits[i].GetComponentInParent<Gem>();
+                Gem gem = attackHits[i].GetComponentInParent<Gem>();
+                attackHits[i] = null;
                 if (gem == null || gem.IsCollected)
                 {
                     continue;
@@ -100,7 +125,7 @@ namespace baodeag.Game
             Vector2 input = joystick != null ? joystick.Direction : Vector2.zero;
             Vector3 moveDirection = GetCameraRelativeMove(input);
 
-            if (moveDirection.sqrMagnitude > 0.01f)
+            if (moveDirection.sqrMagnitude > moveInputSqrThreshold)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
@@ -112,7 +137,10 @@ namespace baodeag.Game
 
             Vector3 motion = moveDirection * moveSpeed;
             motion += verticalVelocity;
-            characterController.Move(motion * Time.deltaTime);
+            if (characterController.enabled)
+            {
+                characterController.Move(motion * Time.deltaTime);
+            }
 
             if (boundary != null)
             {
@@ -126,7 +154,7 @@ namespace baodeag.Game
 
         private Vector3 GetCameraRelativeMove(Vector2 input)
         {
-            if (input.sqrMagnitude < 0.01f)
+            if (input.sqrMagnitude < moveInputSqrThreshold)
             {
                 return Vector3.zero;
             }
@@ -141,6 +169,11 @@ namespace baodeag.Game
 
         private void HandleGravity()
         {
+            if (animator == null)
+            {
+                return;
+            }
+
             if (characterController.isGrounded && verticalVelocity.y < 0f)
             {
                 verticalVelocity.y = groundedStickForce;
@@ -152,9 +185,14 @@ namespace baodeag.Game
 
         private void UpdateAnimator(Vector2 input, float moveAmount)
         {
-            animator.SetFloat(HorizontalHash, input.x, 0.1f, Time.deltaTime);
-            animator.SetFloat(VerticalHash, input.y, 0.1f, Time.deltaTime);
-            animator.SetFloat(MoveAmountHash, moveAmount, 0.1f, Time.deltaTime);
+            if (animator == null)
+            {
+                return;
+            }
+
+            animator.SetFloat(HorizontalHash, input.x, animatorDampTime, Time.deltaTime);
+            animator.SetFloat(VerticalHash, input.y, animatorDampTime, Time.deltaTime);
+            animator.SetFloat(MoveAmountHash, moveAmount, animatorDampTime, Time.deltaTime);
         }
 
         private Vector3 GetAttackCenter()

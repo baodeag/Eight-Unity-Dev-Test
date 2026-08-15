@@ -14,5 +14,11 @@ namespace baodeag.Game
         public Material material;
         public Color lightColor = Color.cyan;
         public Sprite uiIcon;
+
+        private void OnValidate()
+        {
+            scoreValue = Mathf.Max(1, scoreValue);
+            spawnWeight = Mathf.Max(0, spawnWeight);
+        }
     }
 }

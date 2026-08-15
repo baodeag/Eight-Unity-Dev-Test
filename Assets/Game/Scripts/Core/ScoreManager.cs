@@ -23,6 +23,11 @@ namespace baodeag.Game
 
         private bool winRaised;
 
+        private void OnValidate()
+        {
+            targetScore = Mathf.Max(1, targetScore);
+        }
+
         private void Awake()
         {
             if (instance != null && instance != this)

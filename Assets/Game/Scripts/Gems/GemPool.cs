@@ -9,11 +9,26 @@ namespace baodeag.Game
         [SerializeField] private Gem gemPrefab;
         [SerializeField] private int initialSize = 16;
 
+        [Header("Runtime Fallback")]
+        [SerializeField] private float fallbackVisualScale = 0.65f;
+        [SerializeField] private float fallbackColliderRadius = 0.7f;
+        [SerializeField] private float fallbackLightRange = 4f;
+        [SerializeField] private float fallbackLightIntensity = 1.8f;
+
         private readonly Queue<Gem> availableGems = new Queue<Gem>();
         private readonly List<Gem> activeGems = new List<Gem>();
         private Gem runtimeGemPrefab;
 
         public int ActiveCount => activeGems.Count;
+
+        private void OnValidate()
+        {
+            initialSize = Mathf.Max(0, initialSize);
+            fallbackVisualScale = Mathf.Max(0.01f, fallbackVisualScale);
+            fallbackColliderRadius = Mathf.Max(0.01f, fallbackColliderRadius);
+            fallbackLightRange = Mathf.Max(0f, fallbackLightRange);
+            fallbackLightIntensity = Mathf.Max(0f, fallbackLightIntensity);
+        }
 
         private void Awake()
         {
@@ -91,7 +106,7 @@ namespace baodeag.Game
             visual.name = "Visual";
             visual.layer = root.layer;
             visual.transform.SetParent(root.transform, false);
-            visual.transform.localScale = Vector3.one * 0.65f;
+            visual.transform.localScale = Vector3.one * fallbackVisualScale;
 
             Collider visualCollider = visual.GetComponent<Collider>();
             if (visualCollider != null)
@@ -101,12 +116,12 @@ namespace baodeag.Game
 
             SphereCollider gemCollider = root.AddComponent<SphereCollider>();
             gemCollider.isTrigger = true;
-            gemCollider.radius = 0.7f;
+            gemCollider.radius = fallbackColliderRadius;
 
             Light gemLight = root.AddComponent<Light>();
             gemLight.type = LightType.Point;
-            gemLight.range = 4f;
-            gemLight.intensity = 1.8f;
+            gemLight.range = fallbackLightRange;
+            gemLight.intensity = fallbackLightIntensity;
             gemLight.color = Color.cyan;
 
             Gem gem = root.AddComponent<Gem>();

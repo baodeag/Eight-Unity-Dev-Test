@@ -20,10 +20,22 @@ namespace baodeag.Game
         [SerializeField] private int winParticleBurstCount = 5;
         [SerializeField] private float winParticleSpacing = 1.6f;
         [SerializeField] private Vector3 winParticleOffset = new Vector3(0f, 1.6f, 0f);
+        [SerializeField] private float winParticleLifetime = 6f;
+        [SerializeField] private float cameraFallbackDistance = 4f;
+        [SerializeField] private float worldFallbackHeight = 2f;
 
         public GameState CurrentState { get; private set; } = GameState.WaitingToStart;
         public bool IsGameplayActive => CurrentState == GameState.Playing;
         private bool subscribedToScore;
+
+        private void OnValidate()
+        {
+            winParticleBurstCount = Mathf.Max(0, winParticleBurstCount);
+            winParticleSpacing = Mathf.Max(0f, winParticleSpacing);
+            winParticleLifetime = Mathf.Max(0f, winParticleLifetime);
+            cameraFallbackDistance = Mathf.Max(0f, cameraFallbackDistance);
+            worldFallbackHeight = Mathf.Max(0f, worldFallbackHeight);
+        }
 
         private void Awake()
         {
@@ -44,7 +56,11 @@ namespace baodeag.Game
         private void Start()
         {
             SetGameplayEnabled(false);
-            uiManager.ShowWaitingState();
+            if (uiManager != null)
+            {
+                uiManager.ShowWaitingState();
+            }
+
             SubscribeToScore();
 
             if (ScoreManager.instance != null && ScoreManager.instance.CurrentScore >= ScoreManager.instance.TargetScore)
@@ -71,9 +87,20 @@ namespace baodeag.Game
             }
 
             CurrentState = GameState.Intro;
-            uiManager.ShowIntroState();
+            if (uiManager != null)
+            {
+                uiManager.ShowIntroState();
+            }
+
             SetGameplayEnabled(false);
-            introCameraSequence.PlayIntro(BeginPlaying);
+            if (introCameraSequence != null)
+            {
+                introCameraSequence.PlayIntro(BeginPlaying);
+            }
+            else
+            {
+                BeginPlaying();
+            }
         }
 
         public void BeginPlaying()
@@ -84,9 +111,16 @@ namespace baodeag.Game
             }
 
             CurrentState = GameState.Playing;
-            cameraController.SetCameraControlEnabled(true);
+            if (cameraController != null)
+            {
+                cameraController.SetCameraControlEnabled(true);
+            }
+
             SetGameplayEnabled(true);
-            uiManager.ShowPlayingState();
+            if (uiManager != null)
+            {
+                uiManager.ShowPlayingState();
+            }
         }
 
         public void ResetGame()
@@ -99,7 +133,10 @@ namespace baodeag.Game
         {
             CurrentState = GameState.Win;
             SetGameplayEnabled(false);
-            uiManager.ShowWinState();
+            if (uiManager != null)
+            {
+                uiManager.ShowWinState();
+            }
 
             if (winParticle != null)
             {
@@ -127,7 +164,7 @@ namespace baodeag.Game
                 particle.name = $"Win Confetti Burst {i + 1}";
                 particle.gameObject.SetActive(true);
                 PlayParticleSystemTree(particle);
-                Destroy(particle.gameObject, 6f);
+                Destroy(particle.gameObject, winParticleLifetime);
             }
         }
 
@@ -140,10 +177,10 @@ namespace baodeag.Game
 
             if (cameraController != null)
             {
-                return cameraController.transform.position + cameraController.transform.forward * 4f;
+                return cameraController.transform.position + cameraController.transform.forward * cameraFallbackDistance;
             }
 
-            return Vector3.up * 2f;
+            return Vector3.up * worldFallbackHeight;
         }
 
         private static void PlayParticleSystemTree(ParticleSystem particle)

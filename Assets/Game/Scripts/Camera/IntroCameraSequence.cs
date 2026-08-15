@@ -16,9 +16,22 @@ namespace baodeag.Game
         [SerializeField] private float blendDuration = 1.4f;
         [SerializeField] private float orbitRadius = 28f;
         [SerializeField] private float orbitHeight = 18f;
+        [SerializeField] private float startAngle = -55f;
+        [SerializeField] private float endAngle = 265f;
+        [SerializeField] private float startHeightOffset = 4f;
+        [SerializeField] private float lookAtHeightOffset = 1.5f;
         [SerializeField] private AnimationCurve ease = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
         private Coroutine introRoutine;
+
+        private void OnValidate()
+        {
+            orbitDuration = Mathf.Max(0.01f, orbitDuration);
+            blendDuration = Mathf.Max(0.01f, blendDuration);
+            orbitRadius = Mathf.Max(0f, orbitRadius);
+            orbitHeight = Mathf.Max(0f, orbitHeight);
+            startHeightOffset = Mathf.Max(0f, startHeightOffset);
+        }
 
         public void PlayIntro(Action onComplete)
         {
@@ -40,11 +53,11 @@ namespace baodeag.Game
             for (float time = 0f; time < orbitDuration; time += Time.deltaTime)
             {
                 float t = ease.Evaluate(time / orbitDuration);
-                float angle = Mathf.Lerp(-55f, 265f, t) * Mathf.Deg2Rad;
-                float height = Mathf.Lerp(orbitHeight + 4f, orbitHeight, t);
+                float angle = Mathf.Lerp(startAngle, endAngle, t) * Mathf.Deg2Rad;
+                float height = Mathf.Lerp(orbitHeight + startHeightOffset, orbitHeight, t);
                 Vector3 position = center + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * orbitRadius + Vector3.up * height;
                 cameraTransform.position = position;
-                cameraTransform.rotation = Quaternion.LookRotation(center - position + Vector3.up * 1.5f, Vector3.up);
+                cameraTransform.rotation = Quaternion.LookRotation(center - position + Vector3.up * lookAtHeightOffset, Vector3.up);
                 yield return null;
             }
 

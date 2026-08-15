@@ -17,6 +17,12 @@ namespace baodeag.Game
 
         private Canvas parentCanvas;
 
+        private void OnValidate()
+        {
+            handleRange = Mathf.Max(0f, handleRange);
+            deadZone = Mathf.Clamp01(deadZone);
+        }
+
         private void Awake()
         {
             parentCanvas = GetComponentInParent<Canvas>();
@@ -42,6 +48,13 @@ namespace baodeag.Game
                 out Vector2 localPoint);
 
             Vector2 radius = background.sizeDelta * 0.5f;
+            if (Mathf.Approximately(radius.x, 0f) || Mathf.Approximately(radius.y, 0f))
+            {
+                Direction = Vector2.zero;
+                ResetHandle();
+                return;
+            }
+
             Vector2 normalized = new Vector2(localPoint.x / radius.x, localPoint.y / radius.y);
             Direction = Vector2.ClampMagnitude(normalized, 1f);
 

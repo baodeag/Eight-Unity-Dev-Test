@@ -18,11 +18,15 @@ namespace baodeag.Game
         [SerializeField] private float verticalSensitivity = 0.18f;
         [SerializeField] private float minPitch = -10f;
         [SerializeField] private float maxPitch = 65f;
+        [SerializeField] private float pointerDeltaSqrThreshold = 0.01f;
+        [SerializeField] private float pivotHeight = 1.2f;
 
         [Header("Collision")]
         [SerializeField] private LayerMask collisionLayers = ~0;
         [SerializeField] private float collisionRadius = 0.2f;
         [SerializeField] private float collisionPadding = 0.15f;
+        [SerializeField] private float minCollisionDistance = 0.5f;
+        [SerializeField] private float collisionCheckMinDistance = 0.01f;
 
         public Quaternion PlanarRotation => Quaternion.Euler(0f, yaw, 0f);
 
@@ -31,6 +35,22 @@ namespace baodeag.Game
         private float pitch = 18f;
         private bool controlEnabled;
         private bool followEnabled = true;
+
+        private void OnValidate()
+        {
+            followSmoothTime = Mathf.Max(0f, followSmoothTime);
+            pointerDeltaSqrThreshold = Mathf.Max(0f, pointerDeltaSqrThreshold);
+            pivotHeight = Mathf.Max(0f, pivotHeight);
+            collisionRadius = Mathf.Max(0f, collisionRadius);
+            collisionPadding = Mathf.Max(0f, collisionPadding);
+            minCollisionDistance = Mathf.Max(0f, minCollisionDistance);
+            collisionCheckMinDistance = Mathf.Max(0f, collisionCheckMinDistance);
+
+            if (maxPitch < minPitch)
+            {
+                maxPitch = minPitch;
+            }
+        }
 
         private void Start()
         {
@@ -100,7 +120,7 @@ namespace baodeag.Game
                 pointerDelta = Mouse.current.delta.ReadValue();
             }
 
-            if (pointerDelta.sqrMagnitude <= 0.01f)
+            if (pointerDelta.sqrMagnitude <= pointerDeltaSqrThreshold)
             {
                 return;
             }
@@ -139,7 +159,7 @@ namespace baodeag.Game
         private void FollowTarget(bool snap = false)
         {
             Quaternion rotation = Quaternion.Euler(pitch, yaw, 0f);
-            Vector3 pivot = target.position + Vector3.up * 1.2f;
+            Vector3 pivot = target.position + Vector3.up * pivotHeight;
             Vector3 desiredPosition = pivot + rotation * followOffset;
             Vector3 correctedPosition = ResolveCollision(pivot, desiredPosition);
 
@@ -154,12 +174,12 @@ namespace baodeag.Game
             Vector3 toCamera = desiredPosition - pivot;
             float distance = toCamera.magnitude;
 
-            if (distance <= 0.01f || !Physics.SphereCast(pivot, collisionRadius, toCamera.normalized, out RaycastHit hit, distance, collisionLayers, QueryTriggerInteraction.Ignore))
+            if (distance <= collisionCheckMinDistance || !Physics.SphereCast(pivot, collisionRadius, toCamera.normalized, out RaycastHit hit, distance, collisionLayers, QueryTriggerInteraction.Ignore))
             {
                 return desiredPosition;
             }
 
-            return pivot + toCamera.normalized * Mathf.Max(0.5f, hit.distance - collisionPadding);
+            return pivot + toCamera.normalized * Mathf.Max(minCollisionDistance, hit.distance - collisionPadding);
         }
     }
 }

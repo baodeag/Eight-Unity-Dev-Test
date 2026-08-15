@@ -243,7 +243,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a02a3d8f218a024b811dab443324e1a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.VirtualJoystick
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewVirtualJoystick
   background: {fileID: 1883787756}
   handle: {fileID: 1151134999}
   handleRange: 0.45
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f0b79acaf26ffa458b49f114f64f742, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.Boundary
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewBoundary
   xRange: {x: -90, y: 59.4}
   zRange: {x: -179.6, y: 184}
 --- !u!4 &50697865
@@ -907,7 +907,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 898ce77a1c587e24b8784f46b88eb012, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.IntroCameraSequence
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewIntroCameraSequence
   followCamera: {fileID: 865568765}
   mapCenter: {fileID: 67269361}
   player: {fileID: 1896547992}
@@ -915,6 +915,10 @@ MonoBehaviour:
   blendDuration: 1.4
   orbitRadius: 20
   orbitHeight: 12
+  startAngle: -55
+  endAngle: 265
+  startHeightOffset: 4
+  lookAtHeightOffset: 1.5
   ease:
     serializedVersion: 2
     m_Curve:
@@ -988,6 +992,7 @@ GameObject:
   - component: {fileID: 865568767}
   - component: {fileID: 865568766}
   - component: {fileID: 865568765}
+  - component: {fileID: 865568769}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1006,7 +1011,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3847f0fa9c436384ba18ae9a38e67113, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.CameraController
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewCameraController
   target: {fileID: 1896547992}
   followOffset: {x: 0, y: 4.4, z: -9}
   followSmoothTime: 0.08
@@ -1014,11 +1019,15 @@ MonoBehaviour:
   verticalSensitivity: 0.18
   minPitch: -10
   maxPitch: 65
+  pointerDeltaSqrThreshold: 0.01
+  pivotHeight: 1.2
   collisionLayers:
     serializedVersion: 2
     m_Bits: 4294967295
   collisionRadius: 0.2
   collisionPadding: 0.15
+  minCollisionDistance: 0.5
+  collisionCheckMinDistance: 0.01
 --- !u!81 &865568766
 AudioListener:
   m_ObjectHideFlags: 0
@@ -1093,6 +1102,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &865568769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 865568764}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!64 &868896539
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1166,7 +1219,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 036bc84f14743a044b662276dcbe3f44, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.AttackButton
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewAttackButton
   playerController: {fileID: 1896547993}
 --- !u!114 &903867206
 MonoBehaviour:
@@ -2131,11 +2184,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1797445096}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.00024414062, y: 0}
-  m_SizeDelta: {x: 320, y: 90}
-  m_Pivot: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0.00036621094, y: -0.000030517578}
+  m_SizeDelta: {x: 100, y: 90}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1224046004
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2171,7 +2224,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 10
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -2208,7 +2261,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb5ab05432ecb0446abe51dd33096469, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemSpawner
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemSpawner
   gemPool: {fileID: 1242518976}
   gemFactory: {fileID: 1242518975}
   spawnArea: {fileID: 359552912}
@@ -2216,6 +2269,10 @@ MonoBehaviour:
   spawnInterval: 1.25
   maxActiveGems: 12
   minDistanceFromPlayer: 2
+  maxSpawnAttempts: 20
+  spawnRaycastHeight: 5
+  spawnRaycastDistance: 50
+  gemGroundOffset: 0.65
   groundLayers:
     serializedVersion: 2
     m_Bits: 64
@@ -2246,7 +2303,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4104782d3ea09334c9bfe51997abf709, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemFactory
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemFactory
   gemTypes:
   - {fileID: 11400000, guid: f3f36ba05833b0840bbc9236599621a5, type: 2}
   - {fileID: 11400000, guid: 94cd84224b8649946a5f537d4b57b1bf, type: 2}
@@ -2262,9 +2319,13 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58932ee741873ab4dad198b172236ff1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemPool
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemPool
   gemPrefab: {fileID: 7083913768672407266, guid: 848f3c42194c8144f97317b22e8b41a1, type: 3}
   initialSize: 18
+  fallbackVisualScale: 0.65
+  fallbackColliderRadius: 0.7
+  fallbackLightRange: 4
+  fallbackLightIntensity: 1.8
 --- !u!1 &1282856654
 GameObject:
   m_ObjectHideFlags: 0
@@ -2275,6 +2336,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1282856656}
   - component: {fileID: 1282856655}
+  - component: {fileID: 1282856657}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -2362,6 +2424,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1282856657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1282856654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalLightData
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_CustomShadowLayers: 0
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!64 &1354014193
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2664,7 +2755,7 @@ GameObject:
   - component: {fileID: 1607755846}
   - component: {fileID: 1607755845}
   m_Layer: 0
-  m_Name:  Game Managers
+  m_Name: Game Managers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2681,7 +2772,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 863e6340e1aa15d40a4ae23d33117bca, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GameManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGameManager
   playerController: {fileID: 1896547993}
   cameraController: {fileID: 865568765}
   introCameraSequence: {fileID: 767205726}
@@ -2692,6 +2783,9 @@ MonoBehaviour:
   winParticleBurstCount: 7
   winParticleSpacing: 1.8
   winParticleOffset: {x: 0, y: 1.6, z: 0}
+  winParticleLifetime: 6
+  cameraFallbackDistance: 4
+  worldFallbackHeight: 2
 --- !u!114 &1607755846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2703,7 +2797,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 240f926ebf6255042af0123dd49d39b3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.ScoreManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewScoreManager
   targetScore: 10
 --- !u!4 &1607755847
 Transform:
@@ -2733,7 +2827,7 @@ GameObject:
   - component: {fileID: 1676199324}
   - component: {fileID: 1676199323}
   m_Layer: 7
-  m_Name: Climbable Wall North
+  m_Name: Climbable Wall 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2963,7 +3057,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 320, y: 90}
   m_Pivot: {x: 0, y: 1}
 --- !u!64 &1804744777
@@ -3487,7 +3581,7 @@ GameObject:
   - component: {fileID: 1961602913}
   - component: {fileID: 1961602910}
   m_Layer: 0
-  m_Name:  UI Canvas
+  m_Name: UI Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3504,7 +3598,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc1ec414b5a964749a9e518e441ed526, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.UIManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewUIManager
   scoreValueText: {fileID: 1224046005}
   gemIconTarget: {fileID: 1755200151}
   canvas: {fileID: 1961602912}
@@ -3512,6 +3606,8 @@ MonoBehaviour:
   startButton: {fileID: 1010897966}
   resetButton: {fileID: 256544189}
   winPanel: {fileID: 18470628}
+  gemIconProjectionDistance: 6
+  fallbackTargetScore: 10
 --- !u!224 &1961602911
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3613,7 +3709,7 @@ GameObject:
   - component: {fileID: 2068672501}
   - component: {fileID: 2068672500}
   m_Layer: 7
-  m_Name: Climbable Wall East
+  m_Name: Climbable Wall 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

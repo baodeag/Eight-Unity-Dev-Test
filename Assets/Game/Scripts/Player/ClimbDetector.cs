@@ -14,12 +14,15 @@ namespace baodeag.Game
         [SerializeField] private float checkDistance = 0.9f;
         [SerializeField] private float checkHeight = 0.9f;
         [SerializeField] private float requiredInputDot = 0.6f;
+        [SerializeField] private float minMoveSqrMagnitude = 0.1f;
 
         [Header("Motion")]
         [SerializeField] private float climbForward = 1.15f;
         [SerializeField] private float climbDuration = 0.95f;
+        [SerializeField] private float climbCrossFadeDuration = 0.12f;
         [SerializeField] private float topSurfacePadding = 0.08f;
         [SerializeField] private float landingClearancePadding = 0.08f;
+        [SerializeField] private float minLandingRadius = 0.05f;
         [SerializeField] private LayerMask blockingLayers = ~0;
 
         public bool IsClimbing { get; private set; }
@@ -27,9 +30,34 @@ namespace baodeag.Game
         private static readonly int IsClimbingHash = Animator.StringToHash("isClimbing");
         private const string ClimbStateName = "Climb";
 
+        private void OnValidate()
+        {
+            checkDistance = Mathf.Max(0f, checkDistance);
+            checkHeight = Mathf.Max(0f, checkHeight);
+            requiredInputDot = Mathf.Clamp(requiredInputDot, -1f, 1f);
+            minMoveSqrMagnitude = Mathf.Max(0f, minMoveSqrMagnitude);
+            climbForward = Mathf.Max(0f, climbForward);
+            climbDuration = Mathf.Max(0.01f, climbDuration);
+            climbCrossFadeDuration = Mathf.Max(0f, climbCrossFadeDuration);
+            minLandingRadius = Mathf.Max(0.01f, minLandingRadius);
+        }
+
+        private void Awake()
+        {
+            if (characterController == null)
+            {
+                characterController = GetComponent<CharacterController>();
+            }
+
+            if (animator == null)
+            {
+                animator = GetComponent<Animator>();
+            }
+        }
+
         public bool TryStartClimb(Vector3 moveDirection, Boundary boundary)
         {
-            if (IsClimbing || moveDirection.sqrMagnitude < 0.1f)
+            if (characterController == null || IsClimbing || moveDirection.sqrMagnitude < minMoveSqrMagnitude)
             {
                 return false;
             }
@@ -65,24 +93,37 @@ namespace baodeag.Game
         private IEnumerator ClimbRoutine(Vector3 target)
         {
             IsClimbing = true;
-            animator.SetBool(IsClimbingHash, true);
-            animator.CrossFade(ClimbStateName, 0.12f);
+            if (animator != null)
+            {
+                animator.SetBool(IsClimbingHash, true);
+                animator.CrossFade(ClimbStateName, climbCrossFadeDuration);
+            }
+
             Vector3 start = transform.position;
+            bool controllerWasEnabled = characterController != null && characterController.enabled;
+            if (controllerWasEnabled)
+            {
+                characterController.enabled = false;
+            }
 
             for (float time = 0f; time < climbDuration; time += Time.deltaTime)
             {
                 float t = Mathf.SmoothStep(0f, 1f, time / climbDuration);
-                Vector3 next = Vector3.Lerp(start, target, t);
-                characterController.enabled = false;
-                transform.position = next;
-                characterController.enabled = true;
+                transform.position = Vector3.Lerp(start, target, t);
                 yield return null;
             }
 
-            characterController.enabled = false;
             transform.position = target;
-            characterController.enabled = true;
-            animator.SetBool(IsClimbingHash, false);
+            if (controllerWasEnabled)
+            {
+                characterController.enabled = true;
+            }
+
+            if (animator != null)
+            {
+                animator.SetBool(IsClimbingHash, false);
+            }
+
             IsClimbing = false;
         }
 
@@ -100,7 +141,7 @@ namespace baodeag.Game
 
         private bool HasLandingClearance(Vector3 target, Collider climbedCollider)
         {
-            float radius = Mathf.Max(0.05f, characterController.radius - landingClearancePadding);
+            float radius = Mathf.Max(minLandingRadius, characterController.radius - landingClearancePadding);
             float height = Mathf.Max(characterController.height, radius * 2f);
             Vector3 center = target + characterController.center;
             Vector3 bottom = center + Vector3.down * (height * 0.5f - radius);

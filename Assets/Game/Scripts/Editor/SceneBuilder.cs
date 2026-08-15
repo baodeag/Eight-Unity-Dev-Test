@@ -62,6 +62,7 @@ namespace baodeag.Game.Editor
             SetObject(cameraController, "verticalSensitivity", 0.18f);
             SetObject(cameraController, "minPitch", -10f);
             SetObject(cameraController, "maxPitch", 65f);
+            SetObject(cameraController, "pivotHeight", 1.2f);
 
             GameObject mapCenter = new GameObject("Map Center");
             mapCenter.transform.position = ground.transform.position;
@@ -75,6 +76,8 @@ namespace baodeag.Game.Editor
             SetObject(intro, "blendDuration", 1.4f);
             SetObject(intro, "orbitRadius", 28f);
             SetObject(intro, "orbitHeight", 18f);
+            SetObject(intro, "startAngle", -55f);
+            SetObject(intro, "endAngle", 265f);
 
             BuildGemSystem(gemPrefab, player.transform, commonType, rareType, epicType, out GemSpawner spawner);
             UIManager uiManager = BuildUI(player.GetComponent<PlayerController>(), out VirtualJoystick joystick, out Transform gemIcon);
@@ -247,15 +250,6 @@ namespace baodeag.Game.Editor
             transition.AddCondition(greater ? AnimatorConditionMode.Greater : AnimatorConditionMode.Less, threshold, parameter);
         }
 
-        private static void AddBoolTransition(AnimatorStateMachine stateMachine, AnimatorState to, string parameter, bool value)
-        {
-            AnimatorStateTransition transition = stateMachine.AddAnyStateTransition(to);
-            transition.hasExitTime = false;
-            transition.duration = 0.08f;
-            transition.canTransitionToSelf = false;
-            transition.AddCondition(value ? AnimatorConditionMode.If : AnimatorConditionMode.IfNot, 0f, parameter);
-        }
-
         private static void AddBoolStateTransition(AnimatorState from, AnimatorState to, string parameter, bool value)
         {
             AnimatorStateTransition transition = from.AddTransition(to);
@@ -308,6 +302,8 @@ namespace baodeag.Game.Editor
             SetObject(gem, "gemRenderer", renderer);
             SetObject(gem, "gemLight", light);
             SetObject(gem, "gemCollider", collider);
+            SetObject(gem, "visualScale", 0.75f);
+            SetObject(gem, "emissionIntensity", 1.8f);
 
             GameObject prefab = PrefabUtility.SaveAsPrefabAsset(root, GemPrefabPath);
             Object.DestroyImmediate(root);
@@ -342,11 +338,13 @@ namespace baodeag.Game.Editor
             SetObject(player, "gemLayers", LayerMask.GetMask("Gem"));
             SetObject(player, "attackRadius", 2.1f);
             SetObject(player, "attackOffset", new Vector3(0f, 0.75f, 0f));
+            SetObject(player, "attackHitBufferSize", 12);
             SetObject(climb, "characterController", controller);
             SetObject(climb, "animator", animator);
             SetObject(climb, "climbableLayers", LayerMask.GetMask("Climbable"));
             SetObject(climb, "climbForward", 1.15f);
             SetObject(climb, "climbDuration", 0.95f);
+            SetObject(climb, "climbCrossFadeDuration", 0.12f);
             SetObject(climb, "topSurfacePadding", 0.08f);
             SetObject(climb, "landingClearancePadding", 0.08f);
             SetObject(climb, "blockingLayers", ~LayerMask.GetMask("Gem"));
@@ -462,11 +460,19 @@ namespace baodeag.Game.Editor
             SetObject(factory, "gemTypes", new[] { common, rare, epic });
             SetObject(pool, "gemPrefab", gemPrefab);
             SetObject(pool, "initialSize", 18);
+            SetObject(pool, "fallbackVisualScale", 0.65f);
+            SetObject(pool, "fallbackColliderRadius", 0.7f);
+            SetObject(pool, "fallbackLightRange", 4f);
+            SetObject(pool, "fallbackLightIntensity", 1.8f);
             SetObject(spawner, "gemPool", pool);
             SetObject(spawner, "gemFactory", factory);
             SetObject(spawner, "spawnArea", spawnArea);
             SetObject(spawner, "player", player);
             SetObject(spawner, "groundLayers", LayerMask.GetMask("Ground"));
+            SetObject(spawner, "maxSpawnAttempts", 20);
+            SetObject(spawner, "spawnRaycastHeight", 5f);
+            SetObject(spawner, "spawnRaycastDistance", 50f);
+            SetObject(spawner, "gemGroundOffset", 0.65f);
         }
 
         private static UIManager BuildUI(PlayerController player, out VirtualJoystick joystick, out Transform gemIcon)
@@ -513,6 +519,7 @@ namespace baodeag.Game.Editor
             SetObject(uiManager, "startButton", startButton);
             SetObject(uiManager, "resetButton", resetButton);
             SetObject(uiManager, "winPanel", winPanel);
+            SetObject(uiManager, "gemIconProjectionDistance", 6f);
             return uiManager;
         }
 
@@ -632,6 +639,7 @@ namespace baodeag.Game.Editor
                 SetObject(gameManager, "winParticlePrefab", confettiPrefab.GetComponent<ParticleSystem>());
                 SetObject(gameManager, "winParticleBurstCount", 7);
                 SetObject(gameManager, "winParticleSpacing", 1.8f);
+                SetObject(gameManager, "winParticleLifetime", 6f);
             }
         }
 

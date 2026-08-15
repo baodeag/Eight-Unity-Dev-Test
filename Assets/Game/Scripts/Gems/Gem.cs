@@ -15,10 +15,17 @@ namespace baodeag.Game
         [SerializeField] private float rotationSpeed = 100f;
         [SerializeField] private float bobHeight = 0.18f;
         [SerializeField] private float bobSpeed = 2.2f;
+        [SerializeField] private float visualScale = 0.75f;
 
         [Header("Collect Motion")]
         [SerializeField] private float collectDuration = 0.65f;
+        [SerializeField] private float collectArcHeight = 2.25f;
+        [SerializeField] private float collectFallbackHeight = 2f;
+        [SerializeField] private float collectEndScale = 0.25f;
         [SerializeField] private AnimationCurve collectCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
+
+        [Header("Visual")]
+        [SerializeField] private float emissionIntensity = 1.8f;
 
         public bool IsCollected { get; private set; }
 
@@ -34,6 +41,18 @@ namespace baodeag.Game
             ResetVisualTransform();
         }
 
+        private void OnValidate()
+        {
+            bobHeight = Mathf.Max(0f, bobHeight);
+            bobSpeed = Mathf.Max(0f, bobSpeed);
+            visualScale = Mathf.Max(0.01f, visualScale);
+            collectDuration = Mathf.Max(0.01f, collectDuration);
+            collectArcHeight = Mathf.Max(0f, collectArcHeight);
+            collectFallbackHeight = Mathf.Max(0f, collectFallbackHeight);
+            collectEndScale = Mathf.Max(0f, collectEndScale);
+            emissionIntensity = Mathf.Max(0f, emissionIntensity);
+        }
+
         private void Update()
         {
             if (IsCollected)
@@ -44,6 +63,14 @@ namespace baodeag.Game
             transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
             float bob = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
             transform.position = spawnPosition + Vector3.up * bob;
+        }
+
+        private void OnDestroy()
+        {
+            if (runtimeMaterial != null)
+            {
+                Destroy(runtimeMaterial);
+            }
         }
 
         public void InitializePool(GemPool ownerPool)
@@ -95,8 +122,8 @@ namespace baodeag.Game
             Vector3 startPosition = transform.position;
             Vector3 targetPosition = UIManager.instance != null
                 ? UIManager.instance.GetGemIconWorldPosition()
-                : startPosition + Vector3.up * 2f;
-            Vector3 controlPosition = (startPosition + targetPosition) * 0.5f + Vector3.up * 2.25f;
+                : startPosition + Vector3.up * collectFallbackHeight;
+            Vector3 controlPosition = (startPosition + targetPosition) * 0.5f + Vector3.up * collectArcHeight;
 
             for (float time = 0f; time < collectDuration; time += Time.deltaTime)
             {
@@ -104,7 +131,7 @@ namespace baodeag.Game
                 Vector3 firstLeg = Vector3.Lerp(startPosition, controlPosition, t);
                 Vector3 secondLeg = Vector3.Lerp(controlPosition, targetPosition, t);
                 transform.position = Vector3.Lerp(firstLeg, secondLeg, t);
-                transform.localScale = Vector3.one * Mathf.Lerp(1f, 0.25f, t);
+                transform.localScale = Vector3.one * Mathf.Lerp(1f, collectEndScale, t);
                 yield return null;
             }
 
@@ -147,7 +174,7 @@ namespace baodeag.Game
                 if (runtimeMaterial.HasProperty("_EmissionColor"))
                 {
                     runtimeMaterial.EnableKeyword("_EMISSION");
-                    runtimeMaterial.SetColor("_EmissionColor", type.lightColor * 1.8f);
+                    runtimeMaterial.SetColor("_EmissionColor", type.lightColor * emissionIntensity);
                 }
 
                 gemRenderer.sharedMaterial = runtimeMaterial;
@@ -191,7 +218,7 @@ namespace baodeag.Game
 
             visualRoot.localPosition = Vector3.zero;
             visualRoot.localRotation = Quaternion.identity;
-            visualRoot.localScale = Vector3.one * 0.75f;
+            visualRoot.localScale = Vector3.one * visualScale;
         }
     }
 }

@@ -20,10 +20,20 @@ namespace baodeag.Game
         [SerializeField] private Button resetButton;
         [SerializeField] private GameObject winPanel;
 
+        [Header("Collection Target")]
+        [SerializeField] private float gemIconProjectionDistance = 6f;
+        [SerializeField] private int fallbackTargetScore = 10;
+
         private Camera mainCamera;
         private bool subscribedToScore;
         private int currentScore;
         private int currentGemCount;
+
+        private void OnValidate()
+        {
+            gemIconProjectionDistance = Mathf.Max(0f, gemIconProjectionDistance);
+            fallbackTargetScore = Mathf.Max(1, fallbackTargetScore);
+        }
 
         private void Awake()
         {
@@ -126,7 +136,7 @@ namespace baodeag.Game
             }
 
             Ray ray = cameraToUse.ScreenPointToRay(screenPosition);
-            return ray.GetPoint(6f);
+            return ray.GetPoint(gemIconProjectionDistance);
         }
 
         private void UpdateScore(int score)
@@ -145,7 +155,7 @@ namespace baodeag.Game
         {
             if (scoreValueText != null)
             {
-                int targetScore = ScoreManager.instance != null ? ScoreManager.instance.TargetScore : 10;
+                int targetScore = ScoreManager.instance != null ? ScoreManager.instance.TargetScore : fallbackTargetScore;
                 scoreValueText.text = $"{currentScore}/{targetScore}";
             }
         }
