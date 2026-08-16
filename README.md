@@ -1,115 +1,44 @@
-# Eight Unity Dev Test
+# Gem Collector
 
-Unity third-person collection game built for the Eight Unity developer test.
+Game thu thập gem góc nhìn thứ ba được xây dựng bằng Unity cho bài test Eight Unity Developer.
 
-## Overview
+## Tổng Quan
 
-The player starts from a landscape scene, watches a short camera intro around the map, then controls a third-person character with a virtual joystick. Gems spawn randomly on the ground over time. The player moves, climbs low obstacles, attacks nearby gems to collect them, and wins after reaching the target score.
+Người chơi bắt đầu trong một scene landscape, xem đoạn camera intro ngắn bay quanh map, sau đó điều khiển nhân vật góc nhìn thứ ba bằng joystick ảo. Gem sẽ sinh ngẫu nhiên trên mặt sân theo thời gian. Người chơi di chuyển, leo qua các vật cản thấp, tấn công các gem ở gần để thu thập, và chiến thắng khi đạt đủ mốc điểm yêu cầu.
 
-## Unity Version
+## Điều Khiển
 
-- Unity `6000.5.8f1`
-- Universal Render Pipeline
-- Input System package enabled
-- Main scene: `Assets/Game/Scenes/Landscape.unity`
+- Joystick ảo: di chuyển nhân vật theo hướng nhìn của camera
+- Vuốt trên vùng gameplay: xoay camera góc nhìn thứ ba
+- Hỗ trợ multi-touch: giữ joystick bằng một ngón và xoay camera bằng ngón khác
+- Nút Attack: chạy animation tấn công và thu thập gem gần nhất trong phạm vi đánh
+- Nút Reset: tải lại scene hiện tại và xóa điểm đã lưu
 
-## How To Run
+## Yêu Cầu Đã Hoàn Thành
 
-1. Open the project in Unity `6000.5.8f1` or a compatible Unity 6 version.
-2. Open `Assets/Game/Scenes/Landscape.unity`.
-3. Press Play.
-4. Click `Start` to begin the intro and enter gameplay.
+- Màn hình gameplay landscape
+- Camera intro bay quanh map, sau đó blend mượt về sau lưng player
+- Camera follow góc nhìn thứ ba, có thể xoay bằng thao tác vuốt
+- Player di chuyển bằng joystick ảo theo hướng camera
+- Điều khiển animation Idle và Run
+- Giới hạn vị trí player trong phạm vi map
+- Phát hiện vật cản thấp và chạy animation leo trèo
+- Có hành động Attack trong khi vẫn cho phép di chuyển
+- Gem sinh ngẫu nhiên theo thời gian
+- Sử dụng object pooling cho gem
+- Nhiều loại gem với điểm số và tỉ lệ spawn khác nhau
+- Animation gem bay về icon UI khi thu thập
+- Lưu điểm bằng `PlayerPrefs`
+- Điều kiện thắng khi đạt mốc điểm `10`
+- Hiển thị panel thắng và particle `ConfettiBlastRainbow`
+- Có nút Start và Reset
 
-## Android Build Notes
+## Ghi Chú Thiết Kế
 
-The project is configured for landscape gameplay on Android.
-
-Player Settings:
-
-- Default Orientation: `Auto Rotation`
-- Allowed orientations: `Landscape Left`, `Landscape Right`
-- Portrait orientations are disabled
-
-To build:
-
-1. Switch platform to Android in `File > Build Profiles`.
-2. Confirm `Landscape.unity` is included in Scenes In Build.
-3. Build APK/AAB.
-
-## Controls
-
-- Virtual joystick: move the player relative to the camera direction
-- Swipe on the gameplay area: rotate the third-person camera
-- Multi-touch support: hold the joystick with one finger and rotate the camera with another
-- Attack button: play attack animation and collect the nearest gem inside attack range
-- Reset button: reload the current scene and clear saved score
-
-## Implemented Requirements
-
-- Landscape gameplay screen
-- Intro camera orbit around the map, then smooth blend behind the player
-- Third-person follow camera with swipe rotation
-- Player movement by virtual joystick, relative to camera angle
-- Idle and run animation control
-- Boundary clamp to keep the player inside the map
-- Climb detection and climb animation for low obstacles
-- Attack action while movement remains available
-- Random gem spawning over time
-- Object pooling for gems
-- Multiple gem types with different scores and spawn weights
-- Gem collection animation flying toward the UI icon
-- Score saving with `PlayerPrefs`
-- Win condition at target score `10`
-- Win panel and `ConfettiBlastRainbow` particle effect
-- Start and Reset buttons
-
-## Code Structure
-
-```text
-Assets/Game/Scripts/
-  Camera/
-    CameraController.cs
-    IntroCameraSequence.cs
-    Billboard.cs
-  Core/
-    GameManager.cs
-    GameState.cs
-    SaveManager.cs
-    ScoreManager.cs
-  Gems/
-    Gem.cs
-    GemFactory.cs
-    GemPool.cs
-    GemSpawner.cs
-    GemType.cs
-  Player/
-    PlayerController.cs
-    ClimbDetector.cs
-  UI/
-    AttackButton.cs
-    UIManager.cs
-    VirtualJoystick.cs
-  World/
-    Boundary.cs
-```
-
-## Design Notes
-
-- `GameManager` controls game states: waiting, intro, playing, win.
-- `ScoreManager` owns score, gem count, target score, and win event.
-- `SaveManager` wraps `PlayerPrefs` persistence.
-- `GemPool` avoids repeated gem instantiation during gameplay.
-- `GemFactory` chooses gem types by weighted random values.
-- `Gem` uses `MaterialPropertyBlock` for per-instance color and emission without creating runtime material copies.
-- `CameraController` ignores touches over UI, so joystick input does not block camera swipe input from another finger.
-
-## Verification
-
-The C# project was verified with:
-
-```powershell
-dotnet restore Assembly-CSharp.csproj
-dotnet build Assembly-CSharp.csproj --no-restore
-```
-
-Expected result: build succeeds with `0 Warning(s), 0 Error(s)`.
+- `GameManager` quản lý các trạng thái game: chờ bắt đầu, intro, đang chơi, thắng.
+- `ScoreManager` quản lý điểm, số gem đã thu thập, điểm mục tiêu và sự kiện thắng.
+- `SaveManager` bọc logic lưu dữ liệu bằng `PlayerPrefs`.
+- `GemPool` tránh việc instantiate gem lặp lại trong lúc chơi.
+- `GemFactory` chọn loại gem bằng weighted random.
+- `Gem` dùng `MaterialPropertyBlock` để đổi màu và emission riêng cho từng instance mà không tạo thêm bản sao material runtime.
+- `CameraController` bỏ qua các touch nằm trên UI, nên thao tác joystick không chặn việc xoay camera bằng ngón khác.
