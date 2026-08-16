@@ -45,6 +45,12 @@ namespace baodeag.Game
 
         private IEnumerator PlayIntroRoutine(Action onComplete)
         {
+            if (followCamera == null)
+            {
+                onComplete?.Invoke();
+                yield break;
+            }
+
             followCamera.SetCameraControlEnabled(false);
             followCamera.SetFollowEnabled(false);
             Transform cameraTransform = followCamera.transform;

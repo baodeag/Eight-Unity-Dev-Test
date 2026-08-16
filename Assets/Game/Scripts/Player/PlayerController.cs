@@ -122,6 +122,11 @@ namespace baodeag.Game
 
         private void HandleMovement()
         {
+            if (characterController == null)
+            {
+                return;
+            }
+
             Vector2 input = joystick != null ? joystick.Direction : Vector2.zero;
             Vector3 moveDirection = GetCameraRelativeMove(input);
 
@@ -169,18 +174,17 @@ namespace baodeag.Game
 
         private void HandleGravity()
         {
-            if (animator == null)
-            {
-                return;
-            }
-
-            if (characterController.isGrounded && verticalVelocity.y < 0f)
+            bool isGrounded = characterController != null && characterController.isGrounded;
+            if (isGrounded && verticalVelocity.y < 0f)
             {
                 verticalVelocity.y = groundedStickForce;
             }
 
             verticalVelocity.y += gravity * Time.deltaTime;
-            animator.SetBool(IsGroundedHash, characterController.isGrounded);
+            if (animator != null)
+            {
+                animator.SetBool(IsGroundedHash, isGrounded);
+            }
         }
 
         private void UpdateAnimator(Vector2 input, float moveAmount)

@@ -40,7 +40,7 @@ namespace baodeag.Game
 
         private void Update()
         {
-            if (!spawningEnabled || gemPool.ActiveCount >= maxActiveGems)
+            if (!spawningEnabled || gemPool == null || gemFactory == null || gemPool.ActiveCount >= maxActiveGems)
             {
                 return;
             }
@@ -63,7 +63,13 @@ namespace baodeag.Game
 
         private void SpawnGem()
         {
-            if (!TryGetSpawnPosition(out Vector3 position))
+            if (gemPool == null || gemFactory == null || !TryGetSpawnPosition(out Vector3 position))
+            {
+                return;
+            }
+
+            GemType gemType = gemFactory.GetRandomGemType();
+            if (gemType == null)
             {
                 return;
             }
@@ -74,7 +80,7 @@ namespace baodeag.Game
                 return;
             }
 
-            gem.Setup(gemFactory.GetRandomGemType(), position + Vector3.up * gemGroundOffset);
+            gem.Setup(gemType, position + Vector3.up * gemGroundOffset);
         }
 
         private bool TryGetSpawnPosition(out Vector3 position)

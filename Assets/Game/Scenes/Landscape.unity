@@ -243,7 +243,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7a02a3d8f218a024b811dab443324e1a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewVirtualJoystick
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.VirtualJoystick
   background: {fileID: 1883787756}
   handle: {fileID: 1151134999}
   handleRange: 0.45
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6f0b79acaf26ffa458b49f114f64f742, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewBoundary
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.Boundary
   xRange: {x: -90, y: 59.4}
   zRange: {x: -179.6, y: 184}
 --- !u!4 &50697865
@@ -907,7 +907,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 898ce77a1c587e24b8784f46b88eb012, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewIntroCameraSequence
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.IntroCameraSequence
   followCamera: {fileID: 865568765}
   mapCenter: {fileID: 67269361}
   player: {fileID: 1896547992}
@@ -1011,7 +1011,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3847f0fa9c436384ba18ae9a38e67113, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewCameraController
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.CameraController
   target: {fileID: 1896547992}
   followOffset: {x: 0, y: 4.4, z: -9}
   followSmoothTime: 0.08
@@ -1219,7 +1219,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 036bc84f14743a044b662276dcbe3f44, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewAttackButton
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.AttackButton
   playerController: {fileID: 1896547993}
 --- !u!114 &903867206
 MonoBehaviour:
@@ -2261,7 +2261,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fb5ab05432ecb0446abe51dd33096469, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemSpawner
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemSpawner
   gemPool: {fileID: 1242518976}
   gemFactory: {fileID: 1242518975}
   spawnArea: {fileID: 359552912}
@@ -2303,7 +2303,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4104782d3ea09334c9bfe51997abf709, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemFactory
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemFactory
   gemTypes:
   - {fileID: 11400000, guid: f3f36ba05833b0840bbc9236599621a5, type: 2}
   - {fileID: 11400000, guid: 94cd84224b8649946a5f537d4b57b1bf, type: 2}
@@ -2319,7 +2319,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 58932ee741873ab4dad198b172236ff1, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGemPool
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GemPool
   gemPrefab: {fileID: 7083913768672407266, guid: 848f3c42194c8144f97317b22e8b41a1, type: 3}
   initialSize: 18
   fallbackVisualScale: 0.65
@@ -2772,7 +2772,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 863e6340e1aa15d40a4ae23d33117bca, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewGameManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.GameManager
   playerController: {fileID: 1896547993}
   cameraController: {fileID: 865568765}
   introCameraSequence: {fileID: 767205726}
@@ -2797,7 +2797,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 240f926ebf6255042af0123dd49d39b3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewScoreManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.ScoreManager
   targetScore: 10
 --- !u!4 &1607755847
 Transform:
@@ -3602,7 +3602,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fc1ec414b5a964749a9e518e441ed526, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::baodeag.InterviewTest.InterviewUIManager
+  m_EditorClassIdentifier: Assembly-CSharp::baodeag.Game.UIManager
   scoreValueText: {fileID: 1224046005}
   gemIconTarget: {fileID: 1755200151}
   canvas: {fileID: 1961602912}

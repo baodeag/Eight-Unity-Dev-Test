@@ -107,45 +107,66 @@ namespace baodeag.Game
                 return;
             }
 
-            Vector2 pointerDelta = Vector2.zero;
-            int pointerId = -1;
-
-            if (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.isPressed)
+            if (Touchscreen.current != null)
             {
-                pointerDelta = Touchscreen.current.primaryTouch.delta.ReadValue();
-                pointerId = Touchscreen.current.primaryTouch.touchId.ReadValue();
-            }
-            else if (Mouse.current != null && Mouse.current.leftButton.isPressed)
-            {
-                pointerDelta = Mouse.current.delta.ReadValue();
+                foreach (var touch in Touchscreen.current.touches)
+                {
+                    if (!touch.press.isPressed)
+                    {
+                        continue;
+                    }
+
+                    int pointerId = touch.touchId.ReadValue();
+                    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(pointerId))
+                    {
+                        continue;
+                    }
+
+                    Vector2 touchDelta = touch.delta.ReadValue();
+                    if (touchDelta.sqrMagnitude <= pointerDeltaSqrThreshold)
+                    {
+                        continue;
+                    }
+
+                    ApplyOrbitDelta(touchDelta);
+                    return;
+                }
             }
 
-            if (pointerDelta.sqrMagnitude <= pointerDeltaSqrThreshold)
+            if (Mouse.current != null && Mouse.current.leftButton.isPressed)
             {
-                return;
-            }
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+                {
+                    return;
+                }
 
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(pointerId))
-            {
-                return;
-            }
+                Vector2 pointerDelta = Mouse.current.delta.ReadValue();
+                if (pointerDelta.sqrMagnitude <= pointerDeltaSqrThreshold)
+                {
+                    return;
+                }
 
-            ApplyOrbitDelta(pointerDelta);
+                ApplyOrbitDelta(pointerDelta);
+            }
 #else
             if (!controlEnabled || Input.touchCount == 0)
             {
                 return;
             }
 
-            Touch touch = Input.GetTouch(0);
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+            for (int i = 0; i < Input.touchCount; i++)
             {
-                return;
-            }
+                Touch touch = Input.GetTouch(i);
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                {
+                    continue;
+                }
 
-            if (touch.phase == TouchPhase.Moved)
-            {
-                ApplyOrbitDelta(touch.deltaPosition);
+                if (touch.phase == TouchPhase.Moved && touch.deltaPosition.sqrMagnitude > pointerDeltaSqrThreshold)
+                {
+                    ApplyOrbitDelta(touch.deltaPosition);
+                    return;
+                }
             }
 #endif
         }

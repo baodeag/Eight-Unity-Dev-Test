@@ -10,7 +10,7 @@ namespace baodeag.Game
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (GameManager.instance == null || !GameManager.instance.IsGameplayActive)
+            if (playerController == null || GameManager.instance == null || !GameManager.instance.IsGameplayActive)
             {
                 return;
             }

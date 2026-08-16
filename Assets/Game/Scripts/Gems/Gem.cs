@@ -32,12 +32,15 @@ namespace baodeag.Game
         private GemPool pool;
         private GemType gemType;
         private Vector3 spawnPosition;
-        private Material runtimeMaterial;
+        private MaterialPropertyBlock materialPropertyBlock;
         private Coroutine collectRoutine;
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int EmissionColorId = Shader.PropertyToID("_EmissionColor");
 
         private void Awake()
         {
             ResolveReferences();
+            materialPropertyBlock = new MaterialPropertyBlock();
             ResetVisualTransform();
         }
 
@@ -63,14 +66,6 @@ namespace baodeag.Game
             transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
             float bob = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
             transform.position = spawnPosition + Vector3.up * bob;
-        }
-
-        private void OnDestroy()
-        {
-            if (runtimeMaterial != null)
-            {
-                Destroy(runtimeMaterial);
-            }
         }
 
         public void InitializePool(GemPool ownerPool)
@@ -153,34 +148,31 @@ namespace baodeag.Game
 
         private void ApplyTypeVisual(GemType type)
         {
-            if (type == null)
+            if (gemRenderer != null)
             {
-                return;
+                gemRenderer.GetPropertyBlock(materialPropertyBlock);
+                materialPropertyBlock.Clear();
+
+                if (type != null && type.material != null)
+                {
+                    gemRenderer.sharedMaterial = type.material;
+                }
+
+                Material material = type != null ? type.material : gemRenderer.sharedMaterial;
+                if (material != null && type != null && material.HasProperty(BaseColorId))
+                {
+                    materialPropertyBlock.SetColor(BaseColorId, type.lightColor);
+                }
+
+                if (material != null && type != null && material.HasProperty(EmissionColorId))
+                {
+                    materialPropertyBlock.SetColor(EmissionColorId, type.lightColor * emissionIntensity);
+                }
+
+                gemRenderer.SetPropertyBlock(materialPropertyBlock);
             }
 
-            if (gemRenderer != null && type.material != null)
-            {
-                if (runtimeMaterial != null)
-                {
-                    Destroy(runtimeMaterial);
-                }
-
-                runtimeMaterial = new Material(type.material);
-                if (runtimeMaterial.HasProperty("_BaseColor"))
-                {
-                    runtimeMaterial.SetColor("_BaseColor", type.lightColor);
-                }
-
-                if (runtimeMaterial.HasProperty("_EmissionColor"))
-                {
-                    runtimeMaterial.EnableKeyword("_EMISSION");
-                    runtimeMaterial.SetColor("_EmissionColor", type.lightColor * emissionIntensity);
-                }
-
-                gemRenderer.sharedMaterial = runtimeMaterial;
-            }
-
-            if (gemLight != null)
+            if (gemLight != null && type != null)
             {
                 gemLight.color = type.lightColor;
             }
