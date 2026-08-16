@@ -16,5 +16,5 @@ MonoBehaviour:
   scoreValue: 1
   spawnWeight: 70
   material: {fileID: 2100000, guid: a75ca310f2507fc468f87caf986ac8b5, type: 2}
-  lightColor: {r: 0.2, g: 0.95, b: 1, a: 1}
+  lightColor: {r: 0, g: 1, b: 0, a: 1}
   uiIcon: {fileID: 0}
